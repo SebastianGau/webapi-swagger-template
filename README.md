@@ -9,3 +9,12 @@ This template contains a swagger-enabled .net core 3.1 webapi. Based on https://
 
  - swagger documentation automatically updated when updating the API code
  - optional static content enabled for serving single page applications
+
+
+## Environment Variables
+
+| variable name | purpose |
+|----------------|-----------|
+| OT_JAEGER_HOST | jaeger host name|
+| OT_JAGER_PORT| jager host port|
+| OT_JAEGER_SERVICENAME | jaeger service name|

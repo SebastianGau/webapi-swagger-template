@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
 
 
 namespace webapi_template_2
@@ -27,12 +29,39 @@ namespace webapi_template_2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-                //.AddNewtonsoftJson(); //uncomment to use newtonsoft json serializer
-            // Register the Swagger services
+            //.AddNewtonsoftJson(); //uncomment to use newtonsoft json serializer
             services.AddSwaggerGen();
             services.AddSwaggerDocument();
             services.AddSwaggerGenNewtonsoftSupport();
+
+            AddJagerIfNecessary(services);
         }
+
+        private static void AddJagerIfNecessary(IServiceCollection services)
+        {
+            var jagerhost = Environment.GetEnvironmentVariable("OT_JAEGER_HOST");
+            if (String.IsNullOrEmpty(jagerhost))
+            {
+                return;
+            }
+            var jaegerport = Environment.GetEnvironmentVariable("OT_JAEGER_PORT");
+            jaegerport = jaegerport ?? "16686";
+            var jagerservicename = Environment.GetEnvironmentVariable("OT_JAEGER_SERVICENAME") ?? Assembly.GetCallingAssembly().GetName().Name;
+
+
+            services.AddOpenTelemetryTracerProvider(
+                            (builder) => builder
+                                    .AddAspNetCoreInstrumentation()
+                                    .AddJaegerExporter(ex =>
+                                    {
+                                        ex.AgentHost = jagerhost;
+                                        ex.AgentPort = Convert.ToInt32(jaegerport);
+                                        ex.ServiceName = jagerservicename;
+                                    })
+                            );
+        }
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
