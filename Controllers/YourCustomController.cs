@@ -18,13 +18,15 @@ namespace webapi_template_2.Controllers
         }
 
         [HttpPost]
-        public YourCustomOutput Get(YourCustomInput input)
+        public async Task<YourCustomObjectOutput> Get(YourCustomObjectInput input)
         {
-            return new YourCustomOutput
+            return new YourCustomObjectOutput
             {
                 Arg1 = input.Arg1 + input.Arg2,
                 Arg2 = input.Arg1 + input.Arg2
             };
         }
+
     }
+
 }

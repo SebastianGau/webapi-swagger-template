@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,8 +27,11 @@ namespace webapi_template_2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+                //.AddNewtonsoftJson(); //uncomment to use newtonsoft json serializer
             // Register the Swagger services
+            services.AddSwaggerGen();
             services.AddSwaggerDocument();
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
